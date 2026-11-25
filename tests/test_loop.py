@@ -214,6 +214,29 @@ def test_a_quote_on_an_expired_license_is_rejected_and_the_next_turn_stores_decl
         conn.close()
 
 
+def test_a_token_count_lands_on_the_model_step(api, clearance_db):
+    case_id = api.post("/cases").json()["id"]
+    response = _run(api, case_id, [Turn(text="Read the folder.", token_count=42)])
+    assert response.status_code == 200
+    run_id = response.json()["run_id"]
+    trace = api.get(f"/runs/{run_id}")
+    assert trace.status_code == 200
+    body = trace.json()
+    assert body["prompt_version"] == "clearance-v1"
+    assert body["model"] == "fake"
+    model_step = next(step for step in body["steps"] if step["kind"] == "model")
+    assert model_step["response"]["token_count"] == 42
+    conn = connect(clearance_db)
+    try:
+        stored = conn.execute(
+            "SELECT response_json FROM steps WHERE run_id = ? AND kind = 'model' ORDER BY position LIMIT 1",
+            (run_id,),
+        ).fetchone()
+        assert json.loads(stored["response_json"])["token_count"] == 42
+    finally:
+        conn.close()
+
+
 def test_a_later_live_turn_sends_the_prior_output_including_reasoning():
     reasoning = {
         "type": "reasoning",

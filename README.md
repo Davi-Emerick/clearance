@@ -6,11 +6,11 @@ The people, the documents, and the carrier prices are fictional. Nothing in this
 
 SDIP in this project is points inside the window, not the legal Massachusetts worksheet.
 
-Status: phase 8
+Status: phase 9
 
 This checkout answers `GET /health`, stores a case and its text documents, and accepts a cited fact set with no API key. `POST /cases/{id}/run` runs one loop of at most 8 model steps. `build_memo` is the only writer of a memo. The premium on that memo comes from `shop`. A person binds a quote with `POST /cases/{id}/bind`. The rules run again at that moment. The expiration date is not a covered day. The first run creates `data/clearance.db`. Tests set `CLEARANCE_DB` to a temporary file.
 
-The desk flow is in [docs/architecture.md](docs/architecture.md). Coverage stays with the rules: [docs/decisions/001-rules-decide.md](docs/decisions/001-rules-decide.md). The one loop is [docs/decisions/002-one-loop.md](docs/decisions/002-one-loop.md). The database choice is [docs/decisions/003-sqlite.md](docs/decisions/003-sqlite.md). The fake model in CI is [docs/decisions/005-fake-model-in-ci.md](docs/decisions/005-fake-model-in-ci.md).
+The desk flow is in [docs/architecture.md](docs/architecture.md). Coverage stays with the rules: [docs/decisions/001-rules-decide.md](docs/decisions/001-rules-decide.md). The one loop is [docs/decisions/002-one-loop.md](docs/decisions/002-one-loop.md). The database choice is [docs/decisions/003-sqlite.md](docs/decisions/003-sqlite.md). The prompt file is [docs/decisions/004-prompt-files.md](docs/decisions/004-prompt-files.md). The fake model in CI is [docs/decisions/005-fake-model-in-ci.md](docs/decisions/005-fake-model-in-ci.md). The operating notes are [docs/runbook.md](docs/runbook.md).
 
 ## Run
 
