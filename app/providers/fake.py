@@ -5,6 +5,8 @@ from app.providers.base import Turn
 
 
 class FakeLLM:
+    model_id = "fake"
+
     def __init__(self, turns: Sequence[Turn]):
         self._turns = list(turns)
         self._index = 0

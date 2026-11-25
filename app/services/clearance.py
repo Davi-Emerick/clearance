@@ -28,18 +28,25 @@ MANUAL_PROMPT = "manual"
 MANUAL_MODEL = "manual"
 
 
-def record_facts(
+def checked_facts(
     conn: sqlite3.Connection,
     case_id: str,
     submitted: Sequence[Mapping[str, str]],
-    today: date,
-) -> dict:
+) -> list[Fact]:
     cases.require_case(conn, case_id)
     if not submitted:
         raise ClearanceError("The fact set is empty.")
-    parsed = [_parse_fact(conn, case_id, item) for item in submitted]
-    run_id = _manual_run(conn, case_id)
-    for fact in parsed:
+    return [_parse_fact(conn, case_id, item) for item in submitted]
+
+
+def write_facts(
+    conn: sqlite3.Connection,
+    case_id: str,
+    run_id: str,
+    facts: Sequence[Fact],
+) -> None:
+    conn.execute("DELETE FROM facts WHERE run_id = ?", (run_id,))
+    for fact in facts:
         conn.execute(
             """
             INSERT INTO facts (id, case_id, run_id, name, value, document_id, quote)
@@ -47,12 +54,29 @@ def record_facts(
             """,
             (uuid4().hex, case_id, run_id, fact.name, fact.value, fact.document_id, fact.quote),
         )
+
+
+def record_facts(
+    conn: sqlite3.Connection,
+    case_id: str,
+    submitted: Sequence[Mapping[str, str]],
+    today: date,
+) -> dict:
+    parsed = checked_facts(conn, case_id, submitted)
+    run_id = _manual_run(conn, case_id)
+    write_facts(conn, case_id, run_id, parsed)
     return build_memo(conn, case_id, today)
 
 
-def build_memo(conn: sqlite3.Connection, case_id: str, today: date) -> dict:
+def build_memo(
+    conn: sqlite3.Connection,
+    case_id: str,
+    today: date,
+    run_id: str | None = None,
+) -> dict:
     cases.require_case(conn, case_id)
-    run_id = _latest_completed_run(conn, case_id)
+    if run_id is None:
+        run_id = _latest_completed_run(conn, case_id)
     if run_id is None:
         raise ClearanceError("Record facts before evaluating this case.")
     stored = _domain_facts(conn, run_id)
@@ -91,12 +115,18 @@ def build_memo(conn: sqlite3.Connection, case_id: str, today: date) -> dict:
     return memo
 
 
-def evaluate(conn: sqlite3.Connection, case_id: str, today: date) -> dict:
-    memo = build_memo(conn, case_id, today)
-    run_id = _latest_completed_run(conn, case_id)
-    sheet = shop(_domain_facts(conn, run_id or ""), today)
+def assess(conn: sqlite3.Connection, run_id: str, today: date) -> dict:
+    stored = _domain_facts(conn, run_id)
+    decision = recommend(stored, today)
+    sheet = shop(stored, today)
+    carrier, premium = _carrier_premium(decision.recommendation, sheet)
     return {
-        **memo,
+        "recommendation": decision.recommendation,
+        "reasons": list(decision.reasons),
+        "missing": list(decision.missing),
+        "conflicts": _conflict_payload(decision.conflicts),
+        "carrier": carrier,
+        "premium": premium,
         "offers": [
             {
                 "carrier": offer.carrier,
@@ -107,6 +137,13 @@ def evaluate(conn: sqlite3.Connection, case_id: str, today: date) -> dict:
             for offer in sheet.offers
         ],
     }
+
+
+def evaluate(conn: sqlite3.Connection, case_id: str, today: date) -> dict:
+    memo = build_memo(conn, case_id, today)
+    run_id = _latest_completed_run(conn, case_id)
+    sheet = assess(conn, run_id or "", today)
+    return {**memo, "offers": sheet["offers"]}
 
 
 def present(conn: sqlite3.Connection, case_id: str) -> dict:

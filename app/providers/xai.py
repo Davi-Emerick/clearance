@@ -10,10 +10,12 @@ from app.providers.base import ModelError, ToolCall, Turn
 # Copied from https://docs.x.ai/developers/models/grok-4.7 on 2026-11-25.
 MODEL_ID = "grok-4.7"
 BASE_URL = "https://api.x.ai/v1"
-TIMEOUT_SECONDS = 60.0
+# The text guide uses 3600 seconds for this reasoning model.
+TIMEOUT_SECONDS = 3600.0
 
 
 class XaiClient:
+    model_id = MODEL_ID
     def __init__(self, api_key: str):
         key = api_key.strip()
         if not key:
@@ -36,6 +38,7 @@ class XaiClient:
                 "tools": [_tool(item) for item in tools],
                 "temperature": 0,
                 "store": False,
+                "include": ["reasoning.encrypted_content"],
             },
             timeout=TIMEOUT_SECONDS,
         )
@@ -50,6 +53,10 @@ class XaiClient:
 def _input_items(messages: Sequence[Mapping[str, Any]]) -> list[dict]:
     items: list[dict] = []
     for message in messages:
+        raw_output = message.get("output")
+        if raw_output:
+            items.extend(raw_output)
+            continue
         role = str(message.get("role", "user"))
         if role == "tool":
             items.append({
@@ -101,7 +108,8 @@ def _turn(body: Mapping[str, Any]) -> Turn:
     token_count = None
     if isinstance(usage, Mapping) and "total_tokens" in usage:
         token_count = int(usage["total_tokens"])
-    return Turn(text="".join(texts), tool_calls=calls, token_count=token_count)
+    raw_output = body.get("output") if isinstance(body.get("output"), list) else []
+    return Turn(text="".join(texts), tool_calls=calls, token_count=token_count, output=raw_output)
 
 
 def _message_text(content: Any) -> list[str]:

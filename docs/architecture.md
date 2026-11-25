@@ -2,7 +2,7 @@
 
 Clearance is the back end for the new-business desk of a personal-lines agency. The broker uploads the client folder. An agent reads the documents, records facts with citations, and proposes a memo. Python rules compute the recommendation and the premium. The tool stores the memo when it agrees with those rules. A person binds the policy. The rules run again at bind time, and only then does the book gain a policy.
 
-Phase 4 code answers `GET /health`, stores cases and documents, and records cited facts. `build_memo` writes the memo from `recommend` and `shop`. The model protocol has a scripted fake and an xAI client for `grok-4.7`, built only when `XAI_API_KEY` is set. The agent loop and bind are the charter below.
+Phase 5 code answers `GET /health`, stores cases and documents, records cited facts, and runs the agent loop. `build_memo` writes the memo from `recommend` and `shop`. Tests inject `FakeLLM`. Bind is still the charter below.
 
 ```mermaid
 flowchart TD
@@ -30,7 +30,15 @@ flowchart TD
 6. `GET /cases/{id}` returns the facts, the conflicts, the memo, and the trace.
 7. `POST /cases/{id}/bind` writes a policy when the stored memo is `quote` and the rules still agree.
 
-The agent is a client of the clearance service. Tests call that service with no model. A real model call is a manual command.
+## The loop
+
+`POST /cases/{id}/run` calls `run_case`. The system message is `app/agent/prompts/clearance-v1.md`. The user message carries the case id. Each model call counts as one step, up to 8.
+
+The tools, in order, are `list_documents`, `read_document`, `record_facts`, `evaluate`, and `submit_memo`. `record_facts` uses the same citation checks as the manual fact post and writes the facts on this run. `evaluate` returns the legal recommendation and the offers. It does not store a memo. `submit_memo` stores a memo only when its recommendation matches that result, and only through `build_memo`. The carrier and premium on the memo come from `shop`.
+
+A tool error is JSON `{"error": "..."}` and the loop continues. A model response with no tool call is told to call `evaluate` or `submit_memo`, and that response uses one step. An accepted memo ends the run as `completed`. At step 8 with no accepted memo, the run ends as `budget_exhausted` and no new memo is stored. Each model response and each tool call is a row in `steps`.
+
+The live client sends `store: false`. The next live turn sends the previous response output back, including reasoning items. The tests inject `FakeLLM` and do not call the network.
 
 ## Recommendations
 

@@ -4,10 +4,13 @@ from datetime import date
 import sqlite3
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+from app.agent.loop import RunFailed, run_case
 from app.db import connect, db_path, init_db
 from app.errors import ClearanceError
+from app.providers.base import Model, open_model
 from app.services import cases, clearance
 
 
@@ -49,6 +52,10 @@ def get_conn() -> Iterator[sqlite3.Connection]:
         conn.close()
 
 
+def get_model() -> Model:
+    return open_model("live")
+
+
 def _run(action):
     try:
         return action()
@@ -81,6 +88,20 @@ def post_facts(
     clock = today or date.today()
     submitted = [item.model_dump() for item in facts]
     return _run(lambda: clearance.record_facts(conn, case_id, submitted, clock))
+
+
+@app.post("/cases/{case_id}/run")
+def post_run(
+    case_id: str,
+    today: date | None = None,
+    conn: sqlite3.Connection = Depends(get_conn),
+    model: Model = Depends(get_model),
+):
+    clock = today or date.today()
+    try:
+        return _run(lambda: run_case(conn, case_id, model, clock))
+    except RunFailed as exc:
+        return JSONResponse(status_code=500, content={"run_id": exc.run_id})
 
 
 @app.post("/cases/{case_id}/evaluate")

@@ -25,6 +25,7 @@ class Turn(BaseModel):
     text: str = ""
     tool_calls: list[ToolCall] = Field(default_factory=list)
     token_count: int | None = None
+    output: list[Any] = Field(default_factory=list)
 
 
 class Model(Protocol):
