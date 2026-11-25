@@ -1,0 +1,14 @@
+{
+  "today": "2026-06-15",
+  "recommendation": "decline",
+  "fields": {
+    "insured_name": "Nora Quinn",
+    "license_expires_on": "2024-01-01",
+    "vin": "9NORA0QUINN000001",
+    "line_of_business": "auto"
+  },
+  "missing": [],
+  "conflicts": [],
+  "carrier": null,
+  "premium": null
+}

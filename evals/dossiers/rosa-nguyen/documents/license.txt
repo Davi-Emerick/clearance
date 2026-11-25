@@ -1,0 +1,10 @@
+Rosa Nguyen's license is valid, and the file shows 2 SDIP points.
+
+insured_name: Rosa Nguyen
+license_number: S30000022
+license_issued_on: 2012-01-01
+license_expires_on: 2028-01-01
+sdip_points: 2
+line_of_business: auto
+prior_policy_expires_on: 2027-01-01
+vehicle_year: 2019

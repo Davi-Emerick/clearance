@@ -1,0 +1,4 @@
+One registration prints plate MA 8RNP41 for this VIN.
+
+vin: 3ROSA0NGUYEN00001
+plate: MA 8RNP41

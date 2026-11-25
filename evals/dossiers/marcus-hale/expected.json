@@ -1,0 +1,20 @@
+{
+  "today": "2026-06-15",
+  "recommendation": "quote",
+  "fields": {
+    "insured_name": "Marcus Hale",
+    "license_number": "S10000023",
+    "license_issued_on": "2014-03-01",
+    "license_expires_on": "2028-03-01",
+    "sdip_points": "0",
+    "line_of_business": "auto",
+    "vin": "1FAKE0HALE0CAR001",
+    "plate": "MA 4KTP92",
+    "vehicle_year": "2018",
+    "prior_policy_expires_on": "2027-03-01"
+  },
+  "missing": [],
+  "conflicts": [],
+  "carrier": "Northglass Auto",
+  "premium": 738.0
+}

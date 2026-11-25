@@ -1,0 +1,4 @@
+A later card prints a different plate, MA 4RNP90, for the same VIN.
+
+vin: 3ROSA0NGUYEN00001
+plate: MA 4RNP90

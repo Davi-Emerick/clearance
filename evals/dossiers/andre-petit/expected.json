@@ -1,0 +1,13 @@
+{
+  "today": "2026-06-15",
+  "recommendation": "incomplete",
+  "fields": {
+    "insured_name": "Andre Petit",
+    "license_number": "S60000055",
+    "line_of_business": "auto"
+  },
+  "missing": ["vin"],
+  "conflicts": [],
+  "carrier": null,
+  "premium": null
+}

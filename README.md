@@ -6,7 +6,7 @@ The people, the documents, and the carrier prices are fictional. Nothing in this
 
 SDIP in this project is points inside the window, not the legal Massachusetts worksheet.
 
-Status: phase 6
+Status: phase 7
 
 This checkout answers `GET /health`, stores a case and its text documents, and accepts a cited fact set with no API key. `POST /cases/{id}/run` runs one loop of at most 8 model steps. `build_memo` is the only writer of a memo. The premium on that memo comes from `shop`. A person binds a quote with `POST /cases/{id}/bind`. The rules run again at that moment. The expiration date is not a covered day. The first run creates `data/clearance.db`. Tests set `CLEARANCE_DB` to a temporary file.
 
@@ -61,4 +61,12 @@ The bind response has `effective_on` 2026-06-15 and `expires_on` 2027-06-15. Cov
 .\.venv\Scripts\python.exe -m pytest
 ```
 
-GitHub Actions runs the same test on Ubuntu for every push and pull request. The job installs `requirements.txt` and runs `pytest`. The suite covers the health route, the case and document API, cited facts, the memo premium, the recommendation order, the Northglass premium of 738.00, the agent loop, and bind. The job has no API key and does not call xAI.
+GitHub Actions runs the same test on Ubuntu for every push and pull request. The job installs `requirements.txt` and runs `pytest`. The suite covers the health route, the case and document API, cited facts, the memo premium, the recommendation order, the Northglass premium of 738.00, the agent loop, bind, and the structural evaluation. The job has no API key and does not call xAI.
+
+```powershell
+.\.venv\Scripts\python.exe -m evals.run_eval
+```
+
+structural: 10/10. Given a true fact set, the memo obeys the rules. This score does not measure the model.
+
+live: not measured.

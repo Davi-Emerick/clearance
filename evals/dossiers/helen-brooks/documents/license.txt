@@ -1,0 +1,12 @@
+Helen Brooks's license expired on 1 January 2024.
+
+insured_name: Helen Brooks
+license_number: S50000044
+license_issued_on: 2008-05-01
+license_expires_on: 2024-01-01
+sdip_points: 0
+vin: 5HELEN0BROOKS0001
+plate: MA 5HLB44
+vehicle_year: 2016
+prior_policy_expires_on: 2025-05-01
+line_of_business: auto

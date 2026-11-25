@@ -1,0 +1,13 @@
+{
+  "today": "2026-06-15",
+  "recommendation": "out_of_scope",
+  "fields": {
+    "insured_name": "Priya Shah",
+    "line_of_business": "life",
+    "license_number": "S80000088"
+  },
+  "missing": [],
+  "conflicts": [],
+  "carrier": null,
+  "premium": null
+}

@@ -1,0 +1,12 @@
+{
+  "today": "2026-06-15",
+  "recommendation": "refer",
+  "fields": {
+    "insured_name": "Elena Vargas",
+    "license_number": "S20000011",
+    "vin": "2ELENA0VARGAS0001",
+    "line_of_business": "auto"
+  },
+  "missing": ["sdip_points"],
+  "conflicts": []
+}

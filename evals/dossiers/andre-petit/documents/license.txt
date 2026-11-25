@@ -1,0 +1,8 @@
+Andre Petit sent a license and nothing about a car.
+
+insured_name: Andre Petit
+license_number: S60000055
+license_issued_on: 2015-08-01
+license_expires_on: 2028-08-01
+sdip_points: 0
+line_of_business: auto

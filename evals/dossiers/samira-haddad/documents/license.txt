@@ -1,0 +1,8 @@
+Samira Haddad sent her name and her license, and she did not send a VIN.
+
+insured_name: Samira Haddad
+license_number: S40000033
+license_issued_on: 2016-04-01
+license_expires_on: 2028-04-01
+sdip_points: 0
+line_of_business: auto

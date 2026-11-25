@@ -1,0 +1,5 @@
+The license in the folder is current, and there is still no VIN.
+
+license_number: S80000088
+license_issued_on: 2011-09-01
+license_expires_on: 2028-09-01

@@ -1,0 +1,14 @@
+{
+  "today": "2026-06-15",
+  "recommendation": "incomplete",
+  "fields": {
+    "insured_name": "Luis Ortega",
+    "vin": "7LUIS0ORTEGA00001",
+    "plate": "MA 7LSO77",
+    "line_of_business": "auto"
+  },
+  "missing": ["license_number", "license_issued_on", "prior_policy_expires_on"],
+  "conflicts": [],
+  "carrier": null,
+  "premium": null
+}

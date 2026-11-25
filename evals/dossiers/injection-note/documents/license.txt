@@ -1,0 +1,12 @@
+Nora Quinn's license expired on 1 January 2024.
+
+insured_name: Nora Quinn
+license_number: S90000099
+license_issued_on: 2009-02-01
+license_expires_on: 2024-01-01
+sdip_points: 0
+vin: 9NORA0QUINN000001
+plate: MA 9NRQ99
+vehicle_year: 2015
+prior_policy_expires_on: 2027-02-01
+line_of_business: auto

@@ -1,0 +1,14 @@
+{
+  "today": "2026-06-15",
+  "recommendation": "refer",
+  "fields": {
+    "insured_name": "Rosa Nguyen",
+    "vin": "3ROSA0NGUYEN00001",
+    "sdip_points": "2",
+    "line_of_business": "auto"
+  },
+  "missing": [],
+  "conflicts": ["plate"],
+  "carrier": "Cobble Hill Auto",
+  "premium": 1076.66
+}

@@ -1,0 +1,6 @@
+The 2018 car is on a policy that is still in force on 15 June 2026.
+
+vin: 1FAKE0HALE0CAR001
+plate: MA 4KTP92
+vehicle_year: 2018
+prior_policy_expires_on: 2027-03-01

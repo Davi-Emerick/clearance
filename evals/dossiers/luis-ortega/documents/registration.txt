@@ -1,0 +1,7 @@
+Luis Ortega sent a registration with a VIN and a plate, and no license.
+
+insured_name: Luis Ortega
+vin: 7LUIS0ORTEGA00001
+plate: MA 7LSO77
+vehicle_year: 2017
+line_of_business: auto

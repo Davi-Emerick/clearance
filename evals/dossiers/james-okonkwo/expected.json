@@ -1,0 +1,12 @@
+{
+  "today": "2026-06-15",
+  "recommendation": "out_of_scope",
+  "fields": {
+    "insured_name": "James Okonkwo",
+    "line_of_business": "homeowners"
+  },
+  "missing": [],
+  "conflicts": [],
+  "carrier": null,
+  "premium": null
+}

@@ -1,0 +1,4 @@
+James Okonkwo asked for a homeowners quote and did not mention a car.
+
+insured_name: James Okonkwo
+line_of_business: homeowners
