@@ -16,7 +16,7 @@ Owner: Davi Emerick Colli. Code, commits, prompts, docs, and the product README 
 - [x] Phase 7 — Evaluation
 - [x] Phase 8 — Desk and demo script
 - [x] Phase 9 — Prompt version, cost, and runbook
-- [ ] Phase 10 — Application package
+- [x] Phase 10 — Application package
 
 When a phase ends, check only that box. Leave the rest of the plan alone.
 

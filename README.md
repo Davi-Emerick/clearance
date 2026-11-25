@@ -6,11 +6,25 @@ The people, the documents, and the carrier prices are fictional. Nothing in this
 
 SDIP in this project is points inside the window, not the legal Massachusetts worksheet.
 
-Status: phase 9
+```mermaid
+flowchart TD
+  folder[Client folder] --> api[FastAPI]
+  api --> cases[Case service]
+  cases --> docs[Documents in SQLite]
+  api --> loop[Agent loop]
+  loop --> tools[list read record evaluate submit]
+  tools --> clearance[Clearance service]
+  clearance --> rules[Python rules]
+  clearance --> rating[Six fictional carriers]
+  loop --> trace[Run steps]
+  person[Person at the desk] --> bind[Bind]
+  bind --> book[Policy book]
+  rules --> book
+```
 
-This checkout answers `GET /health`, stores a case and its text documents, and accepts a cited fact set with no API key. `POST /cases/{id}/run` runs one loop of at most 8 model steps. `build_memo` is the only writer of a memo. The premium on that memo comes from `shop`. A person binds a quote with `POST /cases/{id}/bind`. The rules run again at that moment. The expiration date is not a covered day. The first run creates `data/clearance.db`. Tests set `CLEARANCE_DB` to a temporary file.
+The loop has five tools and a budget of 8 model steps: `list_documents`, `read_document`, `record_facts`, `evaluate`, and `submit_memo`. `build_memo` is the only writer of a memo. The carrier and the premium on that memo come from `shop`. There is no bind tool. `POST /cases/{id}/bind` runs the rules again. The term starts today and ends on the one-year anniversary. The expiration date is not a covered day.
 
-The desk flow is in [docs/architecture.md](docs/architecture.md). Coverage stays with the rules: [docs/decisions/001-rules-decide.md](docs/decisions/001-rules-decide.md). The one loop is [docs/decisions/002-one-loop.md](docs/decisions/002-one-loop.md). The database choice is [docs/decisions/003-sqlite.md](docs/decisions/003-sqlite.md). The prompt file is [docs/decisions/004-prompt-files.md](docs/decisions/004-prompt-files.md). The fake model in CI is [docs/decisions/005-fake-model-in-ci.md](docs/decisions/005-fake-model-in-ci.md). The operating notes are [docs/runbook.md](docs/runbook.md).
+A quote for Marcus Hale on 15 June 2026 is Northglass Auto at 738.00. That number is the rater's, not a filed rate.
 
 ## Run
 
@@ -25,11 +39,11 @@ $env:CLEARANCE_MODEL = "fake"
 
 Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/). The desk is one column: the folder, the facts with the cited span, the memo, the trace, and the Bind and Close buttons. Stop the server with Ctrl+C. The 90-second script is [docs/demo-script.md](docs/demo-script.md).
 
-`CLEARANCE_MODEL=fake` plays a built-in demo script and does not call a model. `CLEARANCE_MODEL=live` calls `grok-4.7` and needs `XAI_API_KEY` in the environment. With neither the variable nor the key, `POST /cases/{id}/run` returns 400 and names `fake` and `live`.
+`CLEARANCE_MODEL=fake` plays a built-in demo script and does not call a model. `CLEARANCE_MODEL=live` calls `grok-4.7` and needs `XAI_API_KEY` in the environment. With neither the variable nor the key, `POST /cases/{id}/run` returns 400 and names `fake` and `live`. The first run creates `data/clearance.db`. Tests set `CLEARANCE_DB` to a temporary file.
 
 ## Marcus, on the fake model
 
-The folder below is the golden file. `today` is 15 June 2026, so the memo is Northglass Auto at 738.00. Set `CLEARANCE_MODEL` to `fake` in the server process, then in another PowerShell window:
+Set `CLEARANCE_MODEL` to `fake` in the server process. In another PowerShell window:
 
 ```powershell
 $base = "http://127.0.0.1:8000"
@@ -53,7 +67,7 @@ Invoke-RestMethod -Method Post -Uri "$base/cases/$id/run?today=2026-06-15"
 Invoke-RestMethod -Method Post -Uri "$base/cases/$id/bind?today=2026-06-15"
 ```
 
-The bind response has `effective_on` 2026-06-15 and `expires_on` 2027-06-15. Coverage runs up to, and not including, the expiration date.
+The bind response has `effective_on` 2026-06-15 and `expires_on` 2027-06-15.
 
 ## Tests
 
@@ -61,7 +75,7 @@ The bind response has `effective_on` 2026-06-15 and `expires_on` 2027-06-15. Cov
 .\.venv\Scripts\python.exe -m pytest
 ```
 
-GitHub Actions runs the same test on Ubuntu for every push and pull request. The job installs `requirements.txt` and runs `pytest`. The suite covers the health route, the case and document API, cited facts, the memo premium, the recommendation order, the Northglass premium of 738.00, the agent loop, bind, and the structural evaluation. The job has no API key and does not call xAI.
+GitHub Actions runs that command on Ubuntu for every push and pull request. The job installs `requirements.txt` and runs `pytest`. It has no API key and does not call xAI. The suite covers the health route, the case and document API, cited facts, the memo premium, the recommendation order, the Northglass premium of 738.00, the agent loop, bind, and the structural evaluation.
 
 ```powershell
 .\.venv\Scripts\python.exe -m evals.run_eval
@@ -70,3 +84,7 @@ GitHub Actions runs the same test on Ubuntu for every push and pull request. The
 structural: 10/10. Given a true fact set, the memo obeys the rules. This score does not measure the model.
 
 live: not measured.
+
+## Notes
+
+The desk flow is in [docs/architecture.md](docs/architecture.md). The rules decide coverage: [docs/decisions/001-rules-decide.md](docs/decisions/001-rules-decide.md). The loop is one function: [docs/decisions/002-one-loop.md](docs/decisions/002-one-loop.md). The database is one SQLite file: [docs/decisions/003-sqlite.md](docs/decisions/003-sqlite.md). The prompt is a file: [docs/decisions/004-prompt-files.md](docs/decisions/004-prompt-files.md). CI uses a fake model: [docs/decisions/005-fake-model-in-ci.md](docs/decisions/005-fake-model-in-ci.md). Operating notes are in [docs/runbook.md](docs/runbook.md).
