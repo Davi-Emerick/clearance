@@ -2,7 +2,7 @@
 
 Clearance is the back end for the new-business desk of a personal-lines agency. The broker uploads the client folder. An agent reads the documents, records facts with citations, and proposes a memo. Python rules compute the recommendation and the premium. The tool stores the memo when it agrees with those rules. A person binds the policy. The rules run again at bind time, and only then does the book gain a policy.
 
-Phase 3 code answers `GET /health`, stores cases and documents, and records cited facts. `build_memo` writes the memo from `recommend` and `shop`. There is still no model. The agent loop and bind are the charter below.
+Phase 4 code answers `GET /health`, stores cases and documents, and records cited facts. `build_memo` writes the memo from `recommend` and `shop`. The model protocol has a scripted fake and an xAI client for `grok-4.7`, built only when `XAI_API_KEY` is set. The agent loop and bind are the charter below.
 
 ```mermaid
 flowchart TD

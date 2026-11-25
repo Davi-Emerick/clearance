@@ -6,11 +6,11 @@ The people, the documents, and the carrier prices are fictional. Nothing in this
 
 SDIP in this project is points inside the window, not the legal Massachusetts worksheet.
 
-Status: phase 3
+Status: phase 4
 
-This checkout answers `GET /health`, stores a case and its text documents, and accepts a cited fact set with no API key. `build_memo` is the only writer of a memo. The premium on that memo comes from `shop`. The first run creates `data/clearance.db`. Tests set `CLEARANCE_DB` to a temporary file.
+This checkout answers `GET /health`, stores a case and its text documents, and accepts a cited fact set with no API key. `build_memo` is the only writer of a memo. The premium on that memo comes from `shop`. A live model call uses `grok-4.7` when `XAI_API_KEY` is set. The tests use a fake model. The first run creates `data/clearance.db`. Tests set `CLEARANCE_DB` to a temporary file.
 
-The desk flow is in [docs/architecture.md](docs/architecture.md). Coverage stays with the rules: [docs/decisions/001-rules-decide.md](docs/decisions/001-rules-decide.md). The database choice is [docs/decisions/003-sqlite.md](docs/decisions/003-sqlite.md).
+The desk flow is in [docs/architecture.md](docs/architecture.md). Coverage stays with the rules: [docs/decisions/001-rules-decide.md](docs/decisions/001-rules-decide.md). The database choice is [docs/decisions/003-sqlite.md](docs/decisions/003-sqlite.md). The fake model in CI is [docs/decisions/005-fake-model-in-ci.md](docs/decisions/005-fake-model-in-ci.md).
 
 ## Run
 
@@ -32,4 +32,4 @@ Open [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health). The body is `
 .\.venv\Scripts\python.exe -m pytest
 ```
 
-GitHub Actions runs the same test on Ubuntu for every push and pull request. The job installs `requirements.txt` and runs `pytest`. The suite covers the health route, the case and document API, cited facts, the memo premium, the recommendation order, and the Northglass premium of 738.00. The job has no API key and makes no model call.
+GitHub Actions runs the same test on Ubuntu for every push and pull request. The job installs `requirements.txt` and runs `pytest`. The suite covers the health route, the case and document API, cited facts, the memo premium, the recommendation order, the Northglass premium of 738.00, and a scripted fake model. The job has no API key and does not call xAI.

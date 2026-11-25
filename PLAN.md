@@ -10,7 +10,7 @@ Owner: Davi Emerick Colli. Code, commits, prompts, docs, and the product README 
 - [x] Phase 1 — Rules and rating, no model
 - [x] Phase 2 — Case, documents, and API
 - [x] Phase 3 — Clearance service
-- [ ] Phase 4 — Model provider
+- [x] Phase 4 — Model provider
 - [ ] Phase 5 — Agent loop
 - [ ] Phase 6 — Human approval and the book
 - [ ] Phase 7 — Evaluation
