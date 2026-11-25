@@ -2,7 +2,7 @@
 
 Clearance is the back end for the new-business desk of a personal-lines agency. The broker uploads the client folder. An agent reads the documents, records facts with citations, and proposes a memo. Python rules compute the recommendation and the premium. The tool stores the memo when it agrees with those rules. A person binds the policy. The rules run again at bind time, and only then does the book gain a policy.
 
-The code in this phase is `GET /health`. The rest of this page is the charter.
+Phase 1 code answers `GET /health`, and `recommend` and `shop` run on structured facts. The case store, the agent loop, and bind are the charter below.
 
 ```mermaid
 flowchart TD
@@ -38,9 +38,9 @@ The agent is a client of the clearance service. Tests call that service with no 
 
 | Order | Recommendation | When |
 |---|---|---|
-| 1 | `out_of_scope` | The line on file is not auto, and there is no VIN. |
+| 1 | `out_of_scope` | At least one line is on file, none of those values is auto, and there is no VIN. A missing line stays on the auto desk. |
 | 2 | `decline` | A license is present and `license_expires_on` is on or before today. |
-| 3 | `incomplete` | The line is auto and a required field is missing: `insured_name`, `license_number`, `vin`, or both `license_issued_on` and `prior_policy_expires_on`, so years licensed cannot be estimated. |
+| 3 | `incomplete` | The file is on the auto desk and a required field is missing: `insured_name`, `license_number`, `vin`, or both `license_issued_on` and `prior_policy_expires_on`, so years licensed cannot be estimated. A missing line stays on that desk. |
 | 4 | `refer` | The same field is cited in two documents with different values, the prior policy has already expired, `sdip_points` is missing, or `sdip_points` is 4 or more. |
 | 5 | `quote` | Everything else. |
 

@@ -7,7 +7,7 @@ Owner: Davi Emerick Colli. Code, commits, prompts, docs, and the product README 
 ## Progress
 
 - [x] Phase 0 — Repository and architecture charter
-- [ ] Phase 1 — Rules and rating, no model
+- [x] Phase 1 — Rules and rating, no model
 - [ ] Phase 2 — Case, documents, and API
 - [ ] Phase 3 — Clearance service
 - [ ] Phase 4 — Model provider
