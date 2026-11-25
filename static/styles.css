@@ -27,17 +27,19 @@ h1, h2, h3 {
   margin: 0;
 }
 
-button, input {
+button, input, select, textarea {
   font: inherit;
   color: inherit;
 }
 
-button, input {
+button, input, select, textarea {
   border: 1px solid var(--line);
   background: white;
   border-radius: 6px;
   padding: 8px 10px;
 }
+
+textarea { min-height: 5rem; }
 
 button { cursor: pointer; }
 
@@ -52,7 +54,7 @@ button:disabled {
   opacity: 0.55;
 }
 
-button:focus-visible, input:focus-visible, summary:focus-visible {
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
@@ -98,6 +100,18 @@ h2 { margin-bottom: 12px; }
 }
 
 .choices { margin-bottom: 16px; }
+
+form {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.hint {
+  margin: -8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
 
 label {
   display: grid;

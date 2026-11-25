@@ -41,6 +41,12 @@ Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/). The desk is one column: t
 
 `CLEARANCE_MODEL=fake` plays a built-in demo script and does not call a model. `CLEARANCE_MODEL=live` calls `grok-4.7` and needs `XAI_API_KEY` in the environment. With neither the variable nor the key, `POST /cases/{id}/run` returns 400 and names `fake` and `live`. The first run creates `data/clearance.db`. Tests set `CLEARANCE_DB` to a temporary file.
 
+## Use the desk
+
+One command starts the server with `CLEARANCE_MODEL=fake`. It is the block above.
+
+Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/). Type a file, or press Marcus Hale. The premium is fictional. The desk date is 15 June 2026.
+
 ## Marcus, on the fake model
 
 Set `CLEARANCE_MODEL` to `fake` in the server process. In another PowerShell window:

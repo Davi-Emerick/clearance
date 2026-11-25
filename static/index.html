@@ -10,33 +10,53 @@
   <header class="top">
     <p class="eyebrow">New business</p>
     <h1>Clearance</h1>
-    <p class="fine">Fictional insureds. The premium is a demo, not a filed rate. The clock on this desk is 15 June 2026.</p>
+    <p class="fine">Fictional insureds. The premium is a demo, not a filed rate.</p>
   </header>
 
   <main>
     <p id="banner" class="banner" role="status" hidden></p>
 
     <section>
-      <h2>Folder</h2>
+      <h2>File</h2>
+      <p class="fine">Desk date: 15 June 2026. A license date is read against that clock.</p>
+      <form id="file-form">
+        <label>Insured name <input name="insured_name" autocomplete="name"></label>
+        <label>License number <input name="license_number" autocomplete="off"></label>
+        <label>License issued <input name="license_issued_on" inputmode="numeric" autocomplete="off"></label>
+        <p class="hint">YYYY-MM-DD</p>
+        <label>License expires <input name="license_expires_on" inputmode="numeric" autocomplete="off"></label>
+        <p class="hint">YYYY-MM-DD</p>
+        <label>VIN <input name="vin" autocomplete="off"></label>
+        <label>Plate <input name="plate" autocomplete="off"></label>
+        <label>Vehicle year <input name="vehicle_year" inputmode="numeric" autocomplete="off"></label>
+        <label>Prior policy expires <input name="prior_policy_expires_on" inputmode="numeric" autocomplete="off"></label>
+        <p class="hint">YYYY-MM-DD</p>
+        <label>SDIP points <input name="sdip_points" inputmode="numeric" autocomplete="off"></label>
+        <label>Line of business
+          <select name="line_of_business">
+            <option value="auto" selected>auto</option>
+            <option value="homeowners">homeowners</option>
+            <option value="life">life</option>
+          </select>
+        </label>
+        <label>Note <textarea name="note" rows="3"></textarea></label>
+        <button type="submit" id="read-folder" class="primary">Read this folder</button>
+      </form>
       <div class="choices">
         <button type="button" data-slug="marcus-hale">Marcus Hale</button>
         <button type="button" data-slug="helen-brooks">Helen Brooks</button>
         <button type="button" data-slug="injection-note">Injection note</button>
       </div>
+    </section>
+
+    <section>
+      <h2>Result</h2>
       <div id="documents"></div>
-    </section>
-
-    <section>
-      <h2>Facts</h2>
       <div id="facts"></div>
-    </section>
-
-    <section>
-      <h2>Memo</h2>
       <div id="memo"></div>
       <div class="actions">
         <button type="button" id="bind" class="primary" disabled>Bind</button>
-        <label>Note <input id="close-note" maxlength="200" autocomplete="off"></label>
+        <label>Close note <input id="close-note" maxlength="200" autocomplete="off"></label>
         <button type="button" id="close" disabled>Close</button>
       </div>
     </section>

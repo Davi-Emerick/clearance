@@ -1,5 +1,18 @@
 const TODAY = "2026-06-15";
 
+const FIELDS = [
+  "insured_name",
+  "license_number",
+  "license_issued_on",
+  "license_expires_on",
+  "vin",
+  "plate",
+  "vehicle_year",
+  "prior_policy_expires_on",
+  "sdip_points",
+  "line_of_business",
+];
+
 const DEMOS = {
   "marcus-hale": ["license.txt", "registration.txt"],
   "helen-brooks": ["license.txt"],
@@ -7,6 +20,7 @@ const DEMOS = {
 };
 
 const banner = document.querySelector("#banner");
+const form = document.querySelector("#file-form");
 const documentsEl = document.querySelector("#documents");
 const factsEl = document.querySelector("#facts");
 const memoEl = document.querySelector("#memo");
@@ -14,30 +28,69 @@ const stepsEl = document.querySelector("#steps");
 const bindButton = document.querySelector("#bind");
 const closeButton = document.querySelector("#close");
 const closeNote = document.querySelector("#close-note");
+const readButton = document.querySelector("#read-folder");
 
 const state = { caseId: null };
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  readTypedFolder();
+});
 
 document.querySelector(".choices").addEventListener("click", (event) => {
   const button = event.target.closest("button[data-slug]");
   if (!button) return;
-  openFolder(button.dataset.slug);
+  openSample(button.dataset.slug);
 });
 
 bindButton.addEventListener("click", bindCase);
 closeButton.addEventListener("click", closeCase);
 
-async function openFolder(slug) {
+async function readTypedFolder() {
+  const lines = [];
+  for (const name of FIELDS) {
+    const value = form.elements[name].value.trim();
+    if (value) lines.push(`${name}: ${value}`);
+  }
+  if (!lines.length) {
+    showBanner("Type at least one field.");
+    return;
+  }
+  const files = [{ name: "application.txt", body_text: lines.join("\n") }];
+  const note = form.elements.note.value.trim();
+  if (note) files.push({ name: "note.txt", body_text: note });
+  await runDocuments(files);
+}
+
+async function openSample(slug) {
   clearBanner();
   setBusy(true);
   try {
-    const files = DEMOS[slug];
-    const texts = await Promise.all(files.map((name) => readDossier(slug, name)));
+    const names = DEMOS[slug];
+    const texts = await Promise.all(names.map((name) => readDossier(slug, name)));
+    const files = names.map((name, index) => ({ name, body_text: texts[index] }));
+    await runDocuments(files, { alreadyBusy: true });
+  } catch (error) {
+    showBanner(error.message);
+  } finally {
+    setBusy(false);
+  }
+}
+
+async function runDocuments(files, options = {}) {
+  if (!options.alreadyBusy) {
+    clearBanner();
+    setBusy(true);
+  }
+  bindButton.disabled = true;
+  closeButton.disabled = true;
+  try {
     const created = await request("/cases", { method: "POST" });
     state.caseId = created.id;
-    for (let index = 0; index < files.length; index += 1) {
+    for (const file of files) {
       await request(`/cases/${state.caseId}/documents`, {
         method: "POST",
-        body: { name: files[index], body_text: texts[index] },
+        body: { name: file.name, body_text: file.body_text },
       });
     }
     const run = await request(`/cases/${state.caseId}/run?today=${TODAY}`, { method: "POST" });
@@ -50,12 +103,12 @@ async function openFolder(slug) {
     renderFacts(folder.facts);
     renderMemo(folder.memo);
     renderSteps(trace.steps);
-    bindButton.disabled = false;
+    bindButton.disabled = !folder.memo || folder.memo.recommendation !== "quote";
     closeButton.disabled = false;
   } catch (error) {
     showBanner(error.message);
   } finally {
-    setBusy(false);
+    if (!options.alreadyBusy) setBusy(false);
   }
 }
 
@@ -135,12 +188,33 @@ function renderMemo(memo) {
     memoEl.replaceChildren(element("p", "empty", "No memo."));
     return;
   }
-  const headline = element("p", "memo-line", `${memo.recommendation} · ${money(memo.premium)}`);
-  const carrier = element("p", "meta", memo.carrier || "No carrier");
-  memoEl.replaceChildren(headline, carrier);
+  memoEl.replaceChildren(element("p", "memo-line", sentence(memo)));
   for (const reason of memo.reasons || []) {
     memoEl.append(element("p", "", reason));
   }
+  if (memo.missing && memo.missing.length) {
+    memoEl.append(element("p", "meta", memo.missing.join(", ")));
+  }
+}
+
+function sentence(memo) {
+  const premium = money(memo.premium);
+  if (memo.recommendation === "quote") {
+    return `This file can be quoted. ${memo.carrier} at ${premium}. You can bind it.`;
+  }
+  if (memo.recommendation === "refer") {
+    return "A person has to look at this file before anyone binds it.";
+  }
+  if (memo.recommendation === "decline") {
+    return "Do not bind this file.";
+  }
+  if (memo.recommendation === "incomplete") {
+    return "The folder is not complete.";
+  }
+  if (memo.recommendation === "out_of_scope") {
+    return "This is not an auto file.";
+  }
+  return memo.recommendation;
 }
 
 function renderSteps(steps) {
@@ -184,6 +258,7 @@ function clearBanner() {
 }
 
 function setBusy(busy) {
+  readButton.disabled = busy;
   for (const button of document.querySelectorAll(".choices button")) {
     button.disabled = busy;
   }
