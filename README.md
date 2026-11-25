@@ -6,9 +6,11 @@ The people, the documents, and the carrier prices are fictional. Nothing in this
 
 SDIP in this project is points inside the window, not the legal Massachusetts worksheet.
 
-Status: phase 1
+Status: phase 2
 
-This checkout answers `GET /health` and rates a structured auto file. `recommend` chooses quote, refer, decline, incomplete, or out of scope. `shop` prices six fictional carriers. The case API and the agent are described in [docs/architecture.md](docs/architecture.md). The decision that the model does not decide coverage is [docs/decisions/001-rules-decide.md](docs/decisions/001-rules-decide.md).
+This checkout answers `GET /health`, stores a case and its text documents in one SQLite file, and rates a structured auto file with `recommend` and `shop`. The first run creates `data/clearance.db`. Tests set `CLEARANCE_DB` to a temporary file.
+
+The desk flow is in [docs/architecture.md](docs/architecture.md). Coverage stays with the rules: [docs/decisions/001-rules-decide.md](docs/decisions/001-rules-decide.md). The database choice is [docs/decisions/003-sqlite.md](docs/decisions/003-sqlite.md).
 
 ## Run
 
@@ -30,4 +32,4 @@ Open [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health). The body is `
 .\.venv\Scripts\python.exe -m pytest
 ```
 
-GitHub Actions runs the same test on Ubuntu for every push and pull request. The job installs `requirements.txt` and runs `pytest`. The suite covers the health route, the recommendation order, and the Northglass premium of 738.00. The job has no API key and makes no model call.
+GitHub Actions runs the same test on Ubuntu for every push and pull request. The job installs `requirements.txt` and runs `pytest`. The suite covers the health route, the case and document API, the recommendation order, and the Northglass premium of 738.00. The job has no API key and makes no model call.

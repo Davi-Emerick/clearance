@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from app.domain.facts import Fact
@@ -31,3 +33,10 @@ def build_file(**changes: str | list[tuple[str, str]] | None) -> tuple[Fact, ...
 @pytest.fixture
 def filed():
     return build_file
+
+
+@pytest.fixture(autouse=True)
+def clearance_db(tmp_path, monkeypatch) -> Path:
+    path = tmp_path / "clearance.db"
+    monkeypatch.setenv("CLEARANCE_DB", str(path))
+    return path

@@ -2,7 +2,7 @@
 
 Clearance is the back end for the new-business desk of a personal-lines agency. The broker uploads the client folder. An agent reads the documents, records facts with citations, and proposes a memo. Python rules compute the recommendation and the premium. The tool stores the memo when it agrees with those rules. A person binds the policy. The rules run again at bind time, and only then does the book gain a policy.
 
-Phase 1 code answers `GET /health`, and `recommend` and `shop` run on structured facts. The case store, the agent loop, and bind are the charter below.
+Phase 2 code answers `GET /health` and stores cases and documents in SQLite. `recommend` and `shop` still run on structured facts, with no model. The agent loop and bind are the charter below.
 
 ```mermaid
 flowchart TD
