@@ -19,7 +19,7 @@ def add_document(conn: sqlite3.Connection, case_id: str, name: str, body_text: s
     cleaned = name.strip()
     if not cleaned:
         raise ClearanceError("The document name is required.")
-    _require_case(conn, case_id)
+    require_case(conn, case_id)
     document_id = uuid4().hex
     conn.execute(
         "INSERT INTO documents (id, case_id, name, body_text) VALUES (?, ?, ?, ?)",
@@ -29,7 +29,7 @@ def add_document(conn: sqlite3.Connection, case_id: str, name: str, body_text: s
 
 
 def get_case(conn: sqlite3.Connection, case_id: str) -> dict:
-    row = _require_case(conn, case_id)
+    row = require_case(conn, case_id)
     documents = conn.execute(
         "SELECT id, name FROM documents WHERE case_id = ? ORDER BY rowid",
         (case_id,),
@@ -46,7 +46,7 @@ def get_case(conn: sqlite3.Connection, case_id: str) -> dict:
 
 
 def get_document(conn: sqlite3.Connection, case_id: str, document_id: str) -> dict:
-    _require_case(conn, case_id)
+    require_case(conn, case_id)
     row = conn.execute(
         """
         SELECT id, case_id, name, body_text
@@ -65,7 +65,7 @@ def get_document(conn: sqlite3.Connection, case_id: str, document_id: str) -> di
     }
 
 
-def _require_case(conn: sqlite3.Connection, case_id: str) -> sqlite3.Row:
+def require_case(conn: sqlite3.Connection, case_id: str) -> sqlite3.Row:
     row = conn.execute(
         "SELECT id, created_at, status FROM cases WHERE id = ?",
         (case_id,),

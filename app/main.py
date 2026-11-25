@@ -1,5 +1,6 @@
 from collections.abc import Iterator
 from contextlib import asynccontextmanager
+from datetime import date
 import sqlite3
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -7,7 +8,7 @@ from pydantic import BaseModel
 
 from app.db import connect, db_path, init_db
 from app.errors import ClearanceError
-from app.services import cases
+from app.services import cases, clearance
 
 
 @asynccontextmanager
@@ -26,6 +27,13 @@ app = FastAPI(title="Clearance", lifespan=lifespan)
 class DocumentIn(BaseModel):
     name: str
     body_text: str
+
+
+class FactIn(BaseModel):
+    name: str
+    value: str
+    document_id: str = ""
+    quote: str = ""
 
 
 def get_conn() -> Iterator[sqlite3.Connection]:
@@ -60,7 +68,29 @@ def post_case(conn: sqlite3.Connection = Depends(get_conn)):
 
 @app.get("/cases/{case_id}")
 def get_case(case_id: str, conn: sqlite3.Connection = Depends(get_conn)):
-    return _run(lambda: cases.get_case(conn, case_id))
+    return _run(lambda: clearance.present(conn, case_id))
+
+
+@app.post("/cases/{case_id}/facts", status_code=201)
+def post_facts(
+    case_id: str,
+    facts: list[FactIn],
+    today: date | None = None,
+    conn: sqlite3.Connection = Depends(get_conn),
+):
+    clock = today or date.today()
+    submitted = [item.model_dump() for item in facts]
+    return _run(lambda: clearance.record_facts(conn, case_id, submitted, clock))
+
+
+@app.post("/cases/{case_id}/evaluate")
+def post_evaluate(
+    case_id: str,
+    today: date | None = None,
+    conn: sqlite3.Connection = Depends(get_conn),
+):
+    clock = today or date.today()
+    return _run(lambda: clearance.evaluate(conn, case_id, clock))
 
 
 @app.post("/cases/{case_id}/documents", status_code=201)
