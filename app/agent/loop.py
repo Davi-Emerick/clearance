@@ -6,6 +6,7 @@ from time import perf_counter
 from uuid import uuid4
 
 from app.agent.tools import TOOLS, call_tool
+from app.errors import ClearanceError
 from app.providers.base import Model
 from app.services import cases
 
@@ -19,6 +20,48 @@ class RunFailed(Exception):
     def __init__(self, run_id: str):
         super().__init__(run_id)
         self.run_id = run_id
+
+
+def read_run(conn: sqlite3.Connection, run_id: str) -> dict:
+    row = conn.execute(
+        """
+        SELECT id, case_id, prompt_version, model, status, started_at, finished_at
+        FROM runs
+        WHERE id = ?
+        """,
+        (run_id,),
+    ).fetchone()
+    if row is None:
+        raise ClearanceError("Run not found.", 404)
+    steps = conn.execute(
+        """
+        SELECT position, kind, name, request_json, response_json, latency_ms
+        FROM steps
+        WHERE run_id = ?
+        ORDER BY position
+        """,
+        (run_id,),
+    ).fetchall()
+    return {
+        "id": row["id"],
+        "case_id": row["case_id"],
+        "prompt_version": row["prompt_version"],
+        "model": row["model"],
+        "status": row["status"],
+        "started_at": row["started_at"],
+        "finished_at": row["finished_at"],
+        "steps": [
+            {
+                "position": step["position"],
+                "kind": step["kind"],
+                "name": step["name"],
+                "request": json.loads(step["request_json"]),
+                "response": json.loads(step["response_json"]),
+                "latency_ms": step["latency_ms"],
+            }
+            for step in steps
+        ],
+    }
 
 
 def run_case(conn: sqlite3.Connection, case_id: str, model: Model, today: date) -> dict:

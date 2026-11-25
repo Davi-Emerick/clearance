@@ -6,7 +6,7 @@ The people, the documents, and the carrier prices are fictional. Nothing in this
 
 SDIP in this project is points inside the window, not the legal Massachusetts worksheet.
 
-Status: phase 7
+Status: phase 8
 
 This checkout answers `GET /health`, stores a case and its text documents, and accepts a cited fact set with no API key. `POST /cases/{id}/run` runs one loop of at most 8 model steps. `build_memo` is the only writer of a memo. The premium on that memo comes from `shop`. A person binds a quote with `POST /cases/{id}/bind`. The rules run again at that moment. The expiration date is not a covered day. The first run creates `data/clearance.db`. Tests set `CLEARANCE_DB` to a temporary file.
 
@@ -23,7 +23,7 @@ $env:CLEARANCE_MODEL = "fake"
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Open [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health). The body is `{"status": "ok"}`. Stop the server with Ctrl+C.
+Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/). The desk is one column: the folder, the facts with the cited span, the memo, the trace, and the Bind and Close buttons. Stop the server with Ctrl+C. The 90-second script is [docs/demo-script.md](docs/demo-script.md).
 
 `CLEARANCE_MODEL=fake` plays a built-in demo script and does not call a model. `CLEARANCE_MODEL=live` calls `grok-4.7` and needs `XAI_API_KEY` in the environment. With neither the variable nor the key, `POST /cases/{id}/run` returns 400 and names `fake` and `live`.
 

@@ -1,0 +1,150 @@
+:root {
+  --paper: #f3efe6;
+  --card: #fbf8f2;
+  --ink: #1c2430;
+  --muted: #5e675f;
+  --line: #ddd4c6;
+  --green: #1f5c40;
+  --red: #8a3b32;
+  --red-soft: #f8e8e4;
+  --focus: #1f5c40;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+h1, h2, h3 {
+  font-family: Georgia, "Iowan Old Style", serif;
+  font-weight: 500;
+  margin: 0;
+}
+
+button, input {
+  font: inherit;
+  color: inherit;
+}
+
+button, input {
+  border: 1px solid var(--line);
+  background: white;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+button { cursor: pointer; }
+
+button.primary {
+  background: var(--green);
+  color: white;
+  border-color: var(--green);
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+button:focus-visible, input:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.top, main {
+  width: min(40rem, calc(100% - 32px));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.top {
+  padding: 28px 0 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.fine, .empty, .meta {
+  color: var(--muted);
+}
+
+.fine { margin: 8px 0 0; }
+
+main { padding-bottom: 48px; }
+
+section {
+  margin-top: 28px;
+}
+
+h2 { margin-bottom: 12px; }
+
+.choices, .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+}
+
+.choices { margin-bottom: 16px; }
+
+label {
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.card, .fact, details {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 0 0 10px;
+}
+
+.card h3, .fact h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+pre, blockquote {
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 14px;
+}
+
+blockquote {
+  border-left: 3px solid var(--line);
+  padding-left: 10px;
+  color: var(--ink);
+}
+
+.memo-line {
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+
+.banner {
+  margin-top: 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+summary { cursor: pointer; }
+
+.empty { margin: 0; }

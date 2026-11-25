@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clearance</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="top">
+    <p class="eyebrow">New business</p>
+    <h1>Clearance</h1>
+    <p class="fine">Fictional insureds. The premium is a demo, not a filed rate. The clock on this desk is 15 June 2026.</p>
+  </header>
+
+  <main>
+    <p id="banner" class="banner" role="status" hidden></p>
+
+    <section>
+      <h2>Folder</h2>
+      <div class="choices">
+        <button type="button" data-slug="marcus-hale">Marcus Hale</button>
+        <button type="button" data-slug="helen-brooks">Helen Brooks</button>
+        <button type="button" data-slug="injection-note">Injection note</button>
+      </div>
+      <div id="documents"></div>
+    </section>
+
+    <section>
+      <h2>Facts</h2>
+      <div id="facts"></div>
+    </section>
+
+    <section>
+      <h2>Memo</h2>
+      <div id="memo"></div>
+      <div class="actions">
+        <button type="button" id="bind" class="primary" disabled>Bind</button>
+        <label>Note <input id="close-note" maxlength="200" autocomplete="off"></label>
+        <button type="button" id="close" disabled>Close</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Trace</h2>
+      <div id="steps"></div>
+    </section>
+  </main>
+
+  <script src="/static/desk.js"></script>
+</body>
+</html>

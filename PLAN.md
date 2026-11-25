@@ -14,7 +14,7 @@ Owner: Davi Emerick Colli. Code, commits, prompts, docs, and the product README 
 - [x] Phase 5 — Agent loop
 - [x] Phase 6 — Human approval and the book
 - [x] Phase 7 — Evaluation
-- [ ] Phase 8 — Desk and demo script
+- [x] Phase 8 — Desk and demo script
 - [ ] Phase 9 — Prompt version, cost, and runbook
 - [ ] Phase 10 — Application package
 

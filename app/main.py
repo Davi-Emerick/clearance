@@ -1,13 +1,15 @@
 from collections.abc import Iterator
 from contextlib import asynccontextmanager
 from datetime import date
+from pathlib import Path
 import sqlite3
 
 from fastapi import Depends, FastAPI, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from app.agent.loop import RunFailed, run_case
+from app.agent.loop import RunFailed, read_run, run_case
 from app.db import connect, db_path, init_db
 from app.errors import ClearanceError
 from app.providers.base import Model, model_for_request
@@ -25,6 +27,8 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(title="Clearance", lifespan=lifespan)
+STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
+DOSSIER_DIR = Path(__file__).resolve().parent.parent / "evals" / "dossiers"
 
 
 class DocumentIn(BaseModel):
@@ -70,9 +74,19 @@ def _run(action):
         raise HTTPException(status_code=exc.status_code, detail=exc.message) from exc
 
 
+@app.get("/", include_in_schema=False)
+def desk_page():
+    return FileResponse(STATIC_DIR / "index.html")
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/runs/{run_id}")
+def get_run(run_id: str, conn: sqlite3.Connection = Depends(get_conn)):
+    return _run(lambda: read_run(conn, run_id))
 
 
 @app.post("/cases", status_code=201)
@@ -156,3 +170,7 @@ def get_document(
     conn: sqlite3.Connection = Depends(get_conn),
 ):
     return _run(lambda: cases.get_document(conn, case_id, document_id))
+
+
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+app.mount("/dossiers", StaticFiles(directory=DOSSIER_DIR), name="dossiers")

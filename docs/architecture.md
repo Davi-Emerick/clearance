@@ -2,7 +2,7 @@
 
 Clearance is the back end for the new-business desk of a personal-lines agency. The broker uploads the client folder. An agent reads the documents, records facts with citations, and proposes a memo. Python rules compute the recommendation and the premium. The tool stores the memo when it agrees with those rules. A person binds the policy. The rules run again at bind time, and only then does the book gain a policy.
 
-Phase 6 code answers `GET /health`, stores cases and documents, records cited facts, and runs the agent loop. `build_memo` writes the memo from `recommend` and `shop`. `POST /cases/{id}/bind` writes a policy only when the stored memo is `quote` and the rules still return `quote`. `CLEARANCE_MODEL=fake` uses a built-in demo script. `live` calls xAI.
+Phase 8 code serves the one-column desk at `/`. The page loads Marcus, Helen, and the injection note through the case API. `CLEARANCE_MODEL=fake` runs the demo script. Bind and Close call the real routes. `live` still calls xAI only when that variable is set.
 
 ```mermaid
 flowchart TD
