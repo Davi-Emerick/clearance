@@ -148,6 +148,9 @@ def evaluate(conn: sqlite3.Connection, case_id: str, today: date) -> dict:
 
 def present(conn: sqlite3.Connection, case_id: str) -> dict:
     view = cases.get_case(conn, case_id)
+    from app.services.book import policy_for_case
+
+    view["policy"] = policy_for_case(conn, case_id)
     run_id = _latest_completed_run(conn, case_id)
     if run_id is None:
         return view
@@ -266,6 +269,12 @@ def _domain_facts(conn: sqlite3.Connection, run_id: str) -> list[Fact]:
 
 def _row_fact(row: sqlite3.Row) -> Fact:
     return Fact(row["name"], row["value"], row["document_id"], row["quote"])
+
+
+def memo_for_run(conn: sqlite3.Connection, run_id: str | None) -> dict | None:
+    if not run_id:
+        return None
+    return _memo_for_run(conn, run_id)
 
 
 def _memo_for_run(conn: sqlite3.Connection, run_id: str) -> dict | None:

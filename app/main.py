@@ -10,8 +10,8 @@ from pydantic import BaseModel
 from app.agent.loop import RunFailed, run_case
 from app.db import connect, db_path, init_db
 from app.errors import ClearanceError
-from app.providers.base import Model, open_model
-from app.services import cases, clearance
+from app.providers.base import Model, model_for_request
+from app.services import book, cases, clearance
 
 
 @asynccontextmanager
@@ -39,6 +39,10 @@ class FactIn(BaseModel):
     quote: str = ""
 
 
+class CloseIn(BaseModel):
+    note: str = ""
+
+
 def get_conn() -> Iterator[sqlite3.Connection]:
     conn = connect(db_path())
     try:
@@ -53,7 +57,10 @@ def get_conn() -> Iterator[sqlite3.Connection]:
 
 
 def get_model() -> Model:
-    return open_model("live")
+    try:
+        return model_for_request()
+    except ClearanceError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.message) from exc
 
 
 def _run(action):
@@ -112,6 +119,25 @@ def post_evaluate(
 ):
     clock = today or date.today()
     return _run(lambda: clearance.evaluate(conn, case_id, clock))
+
+
+@app.post("/cases/{case_id}/bind")
+def post_bind(
+    case_id: str,
+    today: date | None = None,
+    conn: sqlite3.Connection = Depends(get_conn),
+):
+    clock = today or date.today()
+    return _run(lambda: book.bind_case(conn, case_id, clock))
+
+
+@app.post("/cases/{case_id}/close")
+def post_close(
+    case_id: str,
+    body: CloseIn,
+    conn: sqlite3.Connection = Depends(get_conn),
+):
+    return _run(lambda: book.close_case(conn, case_id, body.note))
 
 
 @app.post("/cases/{case_id}/documents", status_code=201)

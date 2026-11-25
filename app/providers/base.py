@@ -37,6 +37,22 @@ class Model(Protocol):
         """Return the next turn. Tool calls and text may both be empty."""
 
 
+def model_for_request() -> Model:
+    kind = os.environ.get("CLEARANCE_MODEL", "").strip().lower()
+    key = os.environ.get("XAI_API_KEY", "").strip()
+    if kind == "fake":
+        from app.providers.demo import DemoScript
+
+        return DemoScript()
+    if kind == "live" or (not kind and key):
+        return open_model("live")
+    if not kind and not key:
+        raise ClearanceError(
+            "CLEARANCE_MODEL is not set and XAI_API_KEY is not set. Use fake or live.",
+        )
+    raise ClearanceError("CLEARANCE_MODEL must be fake or live.")
+
+
 def open_model(kind: str, script: Sequence[Turn] | None = None) -> Model:
     if kind == "fake":
         from app.providers.fake import FakeLLM
