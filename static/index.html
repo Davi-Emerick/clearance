@@ -3,69 +3,112 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Clearance</title>
+  <title>Clearance — Auto quote</title>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-  <header class="top">
-    <p class="eyebrow">New business</p>
-    <h1>Clearance</h1>
-    <p class="fine">Fictional insureds. The premium is a demo, not a filed rate.</p>
+  <header class="site-header">
+    <div class="header-inner">
+      <p class="brand">Clearance</p>
+      <p class="brand-note">Personal auto</p>
+    </div>
   </header>
 
   <main>
     <p id="banner" class="banner" role="status" hidden></p>
 
-    <section>
-      <h2>File</h2>
-      <p class="fine">Desk date: 15 June 2026. A license date is read against that clock.</p>
+    <section id="wizard" class="sheet">
+      <p class="kicker">New quote</p>
+      <h1>Get an auto quote</h1>
+      <p class="lede">Tell us about the driver and the car. The desk date is 15 June 2026. The premium is fictional, not a filed rate.</p>
+
+      <ol class="steps" aria-label="Quote steps">
+        <li data-step-tab="0" class="is-current">Driver</li>
+        <li data-step-tab="1">Vehicle</li>
+        <li data-step-tab="2">Record</li>
+      </ol>
+
       <form id="file-form">
-        <label>Insured name <input name="insured_name" autocomplete="name"></label>
-        <label>License number <input name="license_number" autocomplete="off"></label>
-        <label>License issued <input name="license_issued_on" inputmode="numeric" autocomplete="off"></label>
-        <p class="hint">YYYY-MM-DD</p>
-        <label>License expires <input name="license_expires_on" inputmode="numeric" autocomplete="off"></label>
-        <p class="hint">YYYY-MM-DD</p>
-        <label>VIN <input name="vin" autocomplete="off"></label>
-        <label>Plate <input name="plate" autocomplete="off"></label>
-        <label>Vehicle year <input name="vehicle_year" inputmode="numeric" autocomplete="off"></label>
-        <label>Prior policy expires <input name="prior_policy_expires_on" inputmode="numeric" autocomplete="off"></label>
-        <p class="hint">YYYY-MM-DD</p>
-        <label>SDIP points <input name="sdip_points" inputmode="numeric" autocomplete="off"></label>
-        <label>Line of business
-          <select name="line_of_business">
-            <option value="auto" selected>auto</option>
-            <option value="homeowners">homeowners</option>
-            <option value="life">life</option>
-          </select>
-        </label>
-        <label>Note <textarea name="note" rows="3"></textarea></label>
-        <button type="submit" id="read-folder" class="primary">Read this folder</button>
+        <fieldset data-step="0">
+          <legend>Driver</legend>
+          <label>Insured name <input name="insured_name" autocomplete="name"></label>
+          <label>License number <input name="license_number" autocomplete="off"></label>
+          <div class="pair">
+            <label>License issued <input name="license_issued_on" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD"></label>
+            <label>License expires <input name="license_expires_on" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD"></label>
+          </div>
+          <p class="hint">YYYY-MM-DD</p>
+          <label>SDIP points <input name="sdip_points" inputmode="numeric" autocomplete="off"></label>
+        </fieldset>
+
+        <fieldset data-step="1" hidden>
+          <legend>Vehicle</legend>
+          <label>VIN <input name="vin" autocomplete="off"></label>
+          <div class="pair">
+            <label>Plate <input name="plate" autocomplete="off"></label>
+            <label>Vehicle year <input name="vehicle_year" inputmode="numeric" autocomplete="off"></label>
+          </div>
+          <label>Line of business
+            <select name="line_of_business">
+              <option value="auto" selected>Auto</option>
+              <option value="homeowners">Homeowners</option>
+              <option value="life">Life</option>
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset data-step="2" hidden>
+          <legend>Record</legend>
+          <label>Prior policy expires <input name="prior_policy_expires_on" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD"></label>
+          <p class="hint">YYYY-MM-DD</p>
+          <label>Note <textarea name="note" rows="4" placeholder="Anything else the underwriter should see"></textarea></label>
+        </fieldset>
+
+        <div class="form-actions">
+          <button type="button" id="back" hidden>Back</button>
+          <button type="submit" id="read-folder" class="primary">Continue</button>
+        </div>
       </form>
-      <div class="choices">
-        <button type="button" data-slug="marcus-hale">Marcus Hale</button>
-        <button type="button" data-slug="helen-brooks">Helen Brooks</button>
-        <button type="button" data-slug="injection-note">Injection note</button>
+
+      <div class="samples">
+        <p>Or open a sample file</p>
+        <div class="choices">
+          <button type="button" data-slug="marcus-hale">Marcus Hale</button>
+          <button type="button" data-slug="helen-brooks">Helen Brooks</button>
+          <button type="button" data-slug="injection-note">Injection note</button>
+        </div>
       </div>
     </section>
 
-    <section>
-      <h2>Result</h2>
-      <div id="documents"></div>
+    <section id="result" class="sheet" hidden>
+      <p class="kicker">Your quote</p>
+      <h2 id="result-title">Quote</h2>
+      <p id="memo" class="quote-sentence"></p>
+      <div class="price-card">
+        <p class="price-label">Annual premium</p>
+        <p id="price" class="price">—</p>
+        <p id="carrier" class="carrier"></p>
+      </div>
+      <div id="reasons"></div>
+      <h3>What we used</h3>
       <div id="facts"></div>
-      <div id="memo"></div>
       <div class="actions">
         <button type="button" id="bind" class="primary" disabled>Bind</button>
-        <label>Close note <input id="close-note" maxlength="200" autocomplete="off"></label>
-        <button type="button" id="close" disabled>Close</button>
+        <label class="close-field">Close note <input id="close-note" maxlength="200" autocomplete="off"></label>
+        <button type="button" id="close" class="ghost" disabled>Close</button>
+        <button type="button" id="another" class="ghost">Start another quote</button>
       </div>
-    </section>
-
-    <section>
-      <h2>Trace</h2>
-      <div id="steps"></div>
+      <details class="trace">
+        <summary>Underwriting trace</summary>
+        <div id="documents"></div>
+        <div id="steps"></div>
+      </details>
     </section>
   </main>
+
+  <footer class="site-footer">
+    <p>Clearance is a fictional desk. Six made-up carriers. A person binds. The rules run again before a policy is written.</p>
+  </footer>
 
   <script src="/static/desk.js"></script>
 </body>

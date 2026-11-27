@@ -18,7 +18,8 @@ def test_the_desk_is_one_column_of_local_files():
         styles = client.get("/static/styles.css")
     assert page.status_code == 200
     assert "text/html" in page.headers["content-type"]
-    assert "<h1>Clearance</h1>" in page.text
+    assert "<h1>Get an auto quote</h1>" in page.text
+    assert ">Clearance<" in page.text
     assert ">Bind<" in page.text
     assert ">Close<" in page.text
     assert 'src="/static/desk.js"' in page.text
@@ -78,7 +79,11 @@ def test_the_form_is_on_the_page():
     assert page.status_code == 200
     for label in LABELS:
         assert label in page.text
-    assert "Read this folder" in page.text
+    assert "Continue" in page.text
+    assert "See your quote" in script.text
+    assert "Driver" in page.text
+    assert "Vehicle" in page.text
+    assert "Record" in page.text
     assert "YYYY-MM-DD" in page.text
     assert "15 June 2026" in page.text
     assert "Marcus Hale" in page.text

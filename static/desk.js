@@ -1,4 +1,5 @@
 const TODAY = "2026-06-15";
+const LAST_STEP = 2;
 
 const FIELDS = [
   "insured_name",
@@ -19,22 +20,53 @@ const DEMOS = {
   "injection-note": ["license.txt", "note.txt"],
 };
 
+const TITLES = {
+  quote: "Your quote is ready",
+  refer: "An underwriter has to look",
+  decline: "We cannot offer a quote",
+  incomplete: "We need more information",
+  out_of_scope: "This is not an auto quote",
+};
+
 const banner = document.querySelector("#banner");
 const form = document.querySelector("#file-form");
+const wizard = document.querySelector("#wizard");
+const result = document.querySelector("#result");
 const documentsEl = document.querySelector("#documents");
 const factsEl = document.querySelector("#facts");
 const memoEl = document.querySelector("#memo");
+const reasonsEl = document.querySelector("#reasons");
+const priceEl = document.querySelector("#price");
+const carrierEl = document.querySelector("#carrier");
+const resultTitle = document.querySelector("#result-title");
 const stepsEl = document.querySelector("#steps");
 const bindButton = document.querySelector("#bind");
 const closeButton = document.querySelector("#close");
 const closeNote = document.querySelector("#close-note");
 const readButton = document.querySelector("#read-folder");
+const backButton = document.querySelector("#back");
+const anotherButton = document.querySelector("#another");
 
-const state = { caseId: null };
+const state = { caseId: null, step: 0 };
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
+  if (state.step < LAST_STEP) {
+    showStep(state.step + 1);
+    return;
+  }
   readTypedFolder();
+});
+
+backButton.addEventListener("click", () => {
+  if (state.step > 0) showStep(state.step - 1);
+});
+
+anotherButton.addEventListener("click", () => {
+  result.hidden = true;
+  wizard.hidden = false;
+  showStep(0);
+  clearBanner();
 });
 
 document.querySelector(".choices").addEventListener("click", (event) => {
@@ -45,6 +77,7 @@ document.querySelector(".choices").addEventListener("click", (event) => {
 
 bindButton.addEventListener("click", bindCase);
 closeButton.addEventListener("click", closeCase);
+showStep(0);
 
 async function readTypedFolder() {
   const lines = [];
@@ -105,6 +138,9 @@ async function runDocuments(files, options = {}) {
     renderSteps(trace.steps);
     bindButton.disabled = !folder.memo || folder.memo.recommendation !== "quote";
     closeButton.disabled = false;
+    wizard.hidden = true;
+    result.hidden = false;
+    result.scrollIntoView();
   } catch (error) {
     showBanner(error.message);
   } finally {
@@ -117,6 +153,7 @@ async function bindCase() {
   try {
     const policy = await request(`/cases/${state.caseId}/bind?today=${TODAY}`, { method: "POST" });
     showBanner(`Bound ${policy.carrier} at ${money(policy.premium)}. The term ends ${policy.expires_on}, and that day is not covered.`);
+    bindButton.disabled = true;
   } catch (error) {
     showBanner(error.message);
   }
@@ -174,7 +211,7 @@ function renderFacts(facts) {
   }
   factsEl.replaceChildren(...facts.map((fact) => {
     const card = element("article", "fact");
-    card.append(element("h3", "", fact.name));
+    card.append(element("h3", "", labelFor(fact.name)));
     card.append(element("p", "", fact.value));
     const quote = document.createElement("blockquote");
     quote.textContent = fact.quote;
@@ -185,16 +222,23 @@ function renderFacts(facts) {
 
 function renderMemo(memo) {
   if (!memo) {
-    memoEl.replaceChildren(element("p", "empty", "No memo."));
+    memoEl.textContent = "No memo.";
+    priceEl.textContent = "—";
+    carrierEl.textContent = "";
+    reasonsEl.replaceChildren();
+    resultTitle.textContent = "Quote";
     return;
   }
-  memoEl.replaceChildren(element("p", "memo-line", sentence(memo)));
-  for (const reason of memo.reasons || []) {
-    memoEl.append(element("p", "", reason));
-  }
+  memoEl.textContent = sentence(memo);
+  resultTitle.textContent = TITLES[memo.recommendation] || "Quote";
+  priceEl.textContent = memo.premium === null || memo.premium === undefined ? "No premium" : `$${money(memo.premium)}`;
+  carrierEl.textContent = memo.carrier || "No carrier offered";
+  const nodes = [];
+  for (const reason of memo.reasons || []) nodes.push(element("p", "", reason));
   if (memo.missing && memo.missing.length) {
-    memoEl.append(element("p", "meta", memo.missing.join(", ")));
+    nodes.push(element("p", "fine", `Still needed: ${memo.missing.join(", ")}`));
   }
+  reasonsEl.replaceChildren(...nodes);
 }
 
 function sentence(memo) {
@@ -235,6 +279,24 @@ function renderSteps(steps) {
   }));
 }
 
+function showStep(step) {
+  state.step = step;
+  for (const fieldset of form.querySelectorAll("fieldset")) {
+    fieldset.hidden = Number(fieldset.dataset.step) !== step;
+  }
+  for (const tab of document.querySelectorAll("[data-step-tab]")) {
+    const index = Number(tab.dataset.stepTab);
+    tab.classList.toggle("is-current", index === step);
+    tab.classList.toggle("is-done", index < step);
+  }
+  backButton.hidden = step === 0;
+  readButton.textContent = step === LAST_STEP ? "See your quote" : "Continue";
+}
+
+function labelFor(name) {
+  return name.replaceAll("_", " ");
+}
+
 function money(value) {
   if (value === null || value === undefined) return "none";
   return Number(value).toFixed(2);
@@ -259,6 +321,7 @@ function clearBanner() {
 
 function setBusy(busy) {
   readButton.disabled = busy;
+  backButton.disabled = busy;
   for (const button of document.querySelectorAll(".choices button")) {
     button.disabled = busy;
   }
