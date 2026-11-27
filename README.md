@@ -37,7 +37,7 @@ $env:CLEARANCE_MODEL = "fake"
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/). The desk is one column: the folder, the facts with the cited span, the memo, the trace, and the Bind and Close buttons. Stop the server with Ctrl+C. The 90-second script is [docs/demo-script.md](docs/demo-script.md).
+Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/). The page is a quote flow: Driver, Vehicle, then Record, then a quote card with the premium, the carrier, and Bind. Sample files for Marcus Hale, Helen Brooks, and the injection note sit under the form. Stop the server with Ctrl+C. The 90-second script is [docs/demo-script.md](docs/demo-script.md).
 
 `CLEARANCE_MODEL=fake` plays a built-in demo script and does not call a model. `CLEARANCE_MODEL=live` calls `grok-4.7` and needs `XAI_API_KEY` in the environment. With neither the variable nor the key, `POST /cases/{id}/run` returns 400 and names `fake` and `live`. The first run creates `data/clearance.db`. Tests set `CLEARANCE_DB` to a temporary file.
 
@@ -45,7 +45,7 @@ Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/). The desk is one column: t
 
 One command starts the server with `CLEARANCE_MODEL=fake`. It is the block above.
 
-Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/). Type a file, or press Marcus Hale. The premium is fictional. The desk date is 15 June 2026.
+Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/). Walk Driver, Vehicle, and Record, then press See your quote. Or press Marcus Hale and read the quote card. The premium is fictional. The desk date is 15 June 2026. Bind is enabled only when the card is a quote.
 
 ## Marcus, on the fake model
 
